@@ -84,8 +84,8 @@ long long signed int get_intersecting_line_count_integer(
 
 	for (long long signed int j = 0; j < n; j++)
 	{
-		if (j % 100000000 == 0)
-			cout << float(j) / float(n) << endl;
+		//if (j % 100000000 == 0)
+		//	cout << float(j) / float(n) << endl;
 
 		const vector_3 p = random_unit_vector();
 
@@ -113,7 +113,7 @@ long long signed int get_intersecting_line_count_integer(
 int main(int argc, char** argv)
 {
 	const real_type receiver_radius = 1.0;
-	real_type emitter_radius = sqrt((10e7 * G * hbar * log(2.0)) / (k * c3 * pi));
+	real_type emitter_radius = sqrt((10e8 * G * hbar * log(2.0)) / (k * c3 * pi));
 
 	const real_type emitter_area =
 		4.0 * pi * emitter_radius * emitter_radius;
@@ -128,16 +128,18 @@ int main(int argc, char** argv)
 
 	real_type v_flat_target = 0;
 
+	const real_type D = 3;
 
-	const real_type start_dim = 3.0;
-	const real_type end_dim = 2.0;
-	const size_t dim_res = 10; // Larger than 1
-	const real_type dim_step_size = (end_dim - start_dim) / (dim_res - 1);
+	const real_type start_pos = 0.1;
+	const real_type end_pos = 100.0;
+	const size_t pos_res = 10; // Larger than 1
+	const real_type pos_step_size = (end_pos - start_pos) / (pos_res - 1);
 
-	// Skip D = 3 for testing purposes
-	for (real_type D = start_dim; D >= end_dim; D += dim_step_size)
+	for (size_t i = 0; i < pos_res; i++)
 	{
-		const vector_3 receiver_pos(100, 0, 0);
+		const vector_3 receiver_pos(start_pos + i * pos_step_size, 0, 0);
+
+		cout << receiver_pos.x << endl;
 
 		const real_type epsilon = 0.01;
 
@@ -200,21 +202,19 @@ int main(int argc, char** argv)
 
 		real_type v_flat = sqrt(a_flat * receiver_pos.x);
 
-		if (v_flat >= v_flat_target)
-		{
-			cout << "Final D: " << D << endl;
-			cout << v_Newton << " " << v_flat << " " << v_flat_target << endl;
-			return 0;
-		}
-		else
-		{
-			cout << "Current D: " << D << endl;
-			cout << v_Newton << " " << v_flat << " " << v_flat_target << endl;
-		}
+		//if (v_flat >= v_flat_target)
+		//{
+		//	cout << "Final D: " << D << endl;
+		//	cout << v_Newton << " " << v_flat << " " << v_flat_target << endl;
+		//	return 0;
+		//}
+		//else
+		//{
+		//	cout << "Current D: " << D << endl;
+		//	cout << v_Newton << " " << v_flat << " " << v_flat_target << endl;
+		//}
 	}
 
-	cout << "Found no sufficiently strong D" << endl;
-	return 1;
 }
 
 
