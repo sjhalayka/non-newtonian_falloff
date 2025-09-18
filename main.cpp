@@ -82,10 +82,10 @@ long long signed int get_intersecting_line_count_integer(
 
 	generator.seed(static_cast<unsigned>(0));
 
-	for (long long signed int j = 0; j < n; j++)
+	for (long long signed int i = 0; i < n; i++)
 	{
-		//if (j % 100000000 == 0)
-		//	cout << float(j) / float(n) << endl;
+		if (i % 100000000 == 0)
+			cout << float(i) / float(n) << endl;
 
 		const vector_3 p = random_unit_vector();
 
@@ -113,7 +113,7 @@ long long signed int get_intersecting_line_count_integer(
 int main(int argc, char** argv)
 {
 	const real_type receiver_radius = 1.0;
-	real_type emitter_radius = sqrt((10e8 * G * hbar * log(2.0)) / (k * c3 * pi));
+	real_type emitter_radius = sqrt((1e10 * G * hbar * log(2.0)) / (k * c3 * pi));
 
 	const real_type emitter_area =
 		4.0 * pi * emitter_radius * emitter_radius;
@@ -126,20 +126,18 @@ int main(int argc, char** argv)
 
 	const real_type emitter_mass = c2 * emitter_radius / (2.0 * G);
 
-	real_type v_flat_target = 0;
+	//real_type v_flat_target = 0;
 
 	const real_type D = 3;
 
-	const real_type start_pos = 0.1;
-	const real_type end_pos = 100.0;
-	const size_t pos_res = 10; // Larger than 1
+	const real_type start_pos = 100.0;
+	const real_type end_pos = 200.0;
+	const size_t pos_res = 2; // Larger than 1
 	const real_type pos_step_size = (end_pos - start_pos) / (pos_res - 1);
 
 	for (size_t i = 0; i < pos_res; i++)
 	{
 		const vector_3 receiver_pos(start_pos + i * pos_step_size, 0, 0);
-
-		cout << receiver_pos.x << endl;
 
 		const real_type epsilon = 0.01;
 
@@ -170,14 +168,9 @@ int main(int argc, char** argv)
 			/ epsilon;
 
 		// g variable
-		real_type gradient_strength =
+		const real_type gradient_strength =
 			-gradient_integer
 			/ (receiver_radius * receiver_radius);
-
-		//real_type y = n / (2.0 * pow(receiver_pos.x, D));
-
-
-
 
 		// Newtonian acceleration
 		real_type a_Newton =
@@ -186,33 +179,18 @@ int main(int argc, char** argv)
 				(4 * k * pi * pow(receiver_pos.x, 4.0)));
 
 		// Newtonian speed
-		real_type v_Newton = sqrt(a_Newton * receiver_pos.x);
+//		real_type v_Newton = sqrt(a_Newton * receiver_pos.x);
 
-
-
-		if (v_flat_target == 0)
-			v_flat_target = v_Newton * 2.0; // please set this to some constant that suits your liking
-
-
-
-
+		// These should match a_Newton
 		const real_type a_flat =
 			gradient_strength * receiver_pos.x * c * hbar * log(2)
 			/ (k * 2 * pi * emitter_mass);
 
-		real_type v_flat = sqrt(a_flat * receiver_pos.x);
+//		real_type v_flat = sqrt(a_flat * receiver_pos.x);
 
-		//if (v_flat >= v_flat_target)
-		//{
-		//	cout << "Final D: " << D << endl;
-		//	cout << v_Newton << " " << v_flat << " " << v_flat_target << endl;
-		//	return 0;
-		//}
-		//else
-		//{
-		//	cout << "Current D: " << D << endl;
-		//	cout << v_Newton << " " << v_flat << " " << v_flat_target << endl;
-		//}
+		cout << a_Newton / a_flat << endl;
+
+		cout << endl;
 	}
 
 }
