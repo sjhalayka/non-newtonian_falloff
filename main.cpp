@@ -38,10 +38,9 @@ real_type Lerp(real_type a, real_type b, real_type t)
 bool circle_intersect(
 	const vector_3 location,
 	const vector_3 normal,
-	const real_type circle_location,
-	const real_type circle_radius)
+	const real_type unit_circle_distance)
 {
-	const vector_3 circle_origin(circle_location, 0, 0);
+	const vector_3 circle_origin(unit_circle_distance, 0, 0);
 
 	if (normal.dot(circle_origin) <= 0)
 		return false;
@@ -62,47 +61,35 @@ bool circle_intersect(
 	v2.y = circle_origin.y - v.y;
 	v2.z = circle_origin.z - v.z;
 
-	if (v2.length() > circle_radius)
+	if (v2.length() > 1.0) // is outside unit radius?
 		return false;
 
 	return true;
 }
 
-long long signed int get_intersecting_line_count_integer(
-	const long long signed int n,
+long long unsigned int get_intersecting_line_count_integer(
+	const long long unsigned int n,
 	const real_type emitter_radius,
-	const vector_3 sphere_location,
-	const real_type sphere_radius,
-	const real_type D)
+	const real_type unit_circle_distance)
 {
-	const real_type disk_like = 3.0 - D;
-	//const real_type fractionality = 1.0 - 2.0 * (0.5 - fmod(D, 1.0));
-
-	long long signed int count = 0;
+	long long unsigned int count = 0;
 
 	generator.seed(static_cast<unsigned>(0));
 
-	for (long long signed int i = 0; i < n; i++)
+	for (long long unsigned int i = 0; i < n; i++)
 	{
 		if (i % 100000000 == 0)
 			cout << float(i) / float(n) << endl;
 
 		const vector_3 p = random_unit_vector();
 
-		vector_3 p_disk = p;
-		p_disk.y = 0;
-		p_disk.normalize();
-
-		if (p_disk.length() == 0)
-			cout << "uh oh" << endl;
-
-		vector_3 normal = slerp(p, p_disk, disk_like);
+		vector_3 normal = p;
 		vector_3 location = normal;
 		location.x *= emitter_radius;
-		//location.y *= emitter_radius; // is zero
+		location.y *= emitter_radius;
 		location.z *= emitter_radius;
 
-		if (circle_intersect(location, normal, sphere_location.x, sphere_radius))
+		if (circle_intersect(location, normal, unit_circle_distance))
 			count++;
 	}
 
@@ -112,8 +99,7 @@ long long signed int get_intersecting_line_count_integer(
 
 int main(int argc, char** argv)
 {
-	const real_type receiver_radius = 1.0;
-	real_type emitter_radius = sqrt((1e10 * G * hbar * log(2.0)) / (k * c3 * pi));
+	const real_type emitter_radius = sqrt((1e9 * G * hbar * log(2.0)) / (k * c3 * pi));
 
 	const real_type emitter_area =
 		4.0 * pi * emitter_radius * emitter_radius;
@@ -126,64 +112,59 @@ int main(int argc, char** argv)
 
 	const real_type emitter_mass = c2 * emitter_radius / (2.0 * G);
 
-	//real_type v_flat_target = 0;
+	// constexpr real_type D = 3;
+	// constexpr real_type receiver_radius = 1.0;
 
-	const real_type D = 3;
+	// Random outward, random tangent plane, and quantum graphity connections
 
-	const real_type start_pos = 100.0;
-	const real_type end_pos = 200.0;
+	const real_type start_pos = /*emitter_radius * */ 100;// 200;
+	const real_type end_pos = /*emitter_radius **/ 100.0;
 	const size_t pos_res = 2; // Larger than 1
 	const real_type pos_step_size = (end_pos - start_pos) / (pos_res - 1);
 
 	for (size_t i = 0; i < pos_res; i++)
 	{
-		const vector_3 receiver_pos(start_pos + i * pos_step_size, 0, 0);
-
 		const real_type epsilon = 0.01;
 
-		vector_3 receiver_pos_plus = receiver_pos;
-		receiver_pos_plus.x += epsilon;
+		const real_type unit_circle_distance = start_pos + i * pos_step_size;
+		const real_type unit_circle_distance_plus = unit_circle_distance + epsilon;
 
 		// beta function
 		const long long unsigned int collision_count_plus_integer =
 			get_intersecting_line_count_integer(
-				static_cast<long long signed int>(n),
+				static_cast<long long unsigned int>(n),
 				emitter_radius,
-				receiver_pos_plus,
-				receiver_radius,
-				D);
+				unit_circle_distance_plus);
 
 		// beta function
 		const long long unsigned int collision_count_integer =
 			get_intersecting_line_count_integer(
-				static_cast<long long signed int>(n),
+				static_cast<long long unsigned int>(n),
 				emitter_radius,
-				receiver_pos,
-				receiver_radius,
-				D);
+				unit_circle_distance);
 
 		// alpha variable
 		const real_type gradient_integer =
 			(static_cast<real_type>(collision_count_plus_integer) - static_cast<real_type>(collision_count_integer))
 			/ epsilon;
 
-		// g variable
-		const real_type gradient_strength =
-			-gradient_integer
-			/ (receiver_radius * receiver_radius);
+		// g variable, doesn't need to be scaled because
+		// we are using a unit size receiver
+		real_type gradient_strength =
+			-gradient_integer;
 
 		// Newtonian acceleration
-		real_type a_Newton =
+		const real_type a_Newton =
 			sqrt(
 				(n * G * c * hbar * log(2.0)) /
-				(4 * k * pi * pow(receiver_pos.x, 4.0)));
+				(4 * k * pi * pow(unit_circle_distance, 4.0)));
 
 		// Newtonian speed
 //		real_type v_Newton = sqrt(a_Newton * receiver_pos.x);
 
 		// These should match a_Newton
 		const real_type a_flat =
-			gradient_strength * receiver_pos.x * c * hbar * log(2)
+			gradient_strength * unit_circle_distance * c * hbar * log(2)
 			/ (k * 2 * pi * emitter_mass);
 
 //		real_type v_flat = sqrt(a_flat * receiver_pos.x);
