@@ -49,6 +49,8 @@ using std::thread;
 std::mt19937 generator(0);
 std::uniform_real_distribution<real_type> dis(0.0, 1.0);
 
+#include <optional>
+using namespace std;
 
 const real_type pi = 4.0 * atan(1.0);
 const real_type G = 6.67430e-11;
