@@ -235,7 +235,7 @@ long long unsigned int get_intersecting_line_count_integer(
 
 int main(int argc, char** argv)
 {
-	const real_type emitter_radius = sqrt((1e11 * G * hbar * log(2.0)) / (k * c3 * pi));
+	const real_type emitter_radius = sqrt((1e10 * G * hbar * log(2.0)) / (k * c3 * pi));
 	
 	const real_type emitter_radius_geometrized = sqrt((1e10 * log(2.0)) / (pi));
 
@@ -273,7 +273,7 @@ int main(int argc, char** argv)
 
 	const real_type emitter_mass = c2 * emitter_radius / (2.0 * G);
 
-	const real_type emitter_mass_geometrized = emitter_radius / (2.0);
+	const real_type emitter_mass_geometrized = emitter_radius_geometrized / (2.0);
 
 //	cout << emitter_mass << " " << emitter_mass_geometrized << endl;
 
@@ -330,7 +330,7 @@ int main(int argc, char** argv)
 
 		const real_type a_Newton_geometrized =
 			sqrt(
-				(n * log(2.0)) /
+				(n_geometrized * log(2.0)) /
 				(4 * pi * pow(unit_circle_distance, 4.0)));
 
 
@@ -347,7 +347,7 @@ int main(int argc, char** argv)
 
 		const real_type a_flat_geometrized =
 			gradient_strength * unit_circle_distance * log(2)
-			/ (2 * pi * emitter_mass);
+			/ (2 * pi * emitter_mass_geometrized);
 
 		cout << a_flat << " " << a_flat_geometrized << endl;
 
