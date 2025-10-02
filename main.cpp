@@ -224,6 +224,8 @@ long long unsigned int get_intersecting_line_count_integer(
 		vector_3 normal = p;
 		vector_3 location = normal;
 
+		//cout << emitter_radius << endl;
+
 		location.x *= emitter_radius;
 		location.y *= emitter_radius;
 		location.z *= emitter_radius;
@@ -238,10 +240,17 @@ long long unsigned int get_intersecting_line_count_integer(
 
 int main(int argc, char** argv)
 {
-	const real_type receiver_radius = 1.0; // One Planck unit
+	const real_type receiver_radius = 1.0; // Minimum one Planck unit
 
-	const real_type emitter_radius = sqrt((1e10 * G * hbar * log(2.0)) / (k * c3 * pi));
-	const real_type emitter_radius_geometrized = sqrt((1e10 * log(2.0)) / (pi));
+
+
+	// todo: make receiver radius the same as emitter radius
+
+
+
+	const real_type emitter_radius = sqrt((1e9 * G * hbar * log(2.0)) / (k * c3 * pi));
+
+	const real_type emitter_radius_geometrized = sqrt((1e9 * log(2.0)) / (pi));
 
 
 //	cout << emitter_radius << " " << emitter_radius_geometrized << endl;
@@ -250,8 +259,8 @@ int main(int argc, char** argv)
 
 
 
-	const real_type emitter_area =
-		4.0 * pi * emitter_radius * emitter_radius;
+//	const real_type emitter_area =
+//		4.0 * pi * emitter_radius * emitter_radius;
 
 	const real_type emitter_area_geometrized =
 		4.0 * pi * emitter_radius_geometrized * emitter_radius_geometrized;
@@ -262,9 +271,9 @@ int main(int argc, char** argv)
 
 	// Field line count
 	// re: holographic principle:
-	const real_type n =
-		(k * c3 * emitter_area)
-		/ (log(2.0) * 4.0 * G * hbar);
+//	const real_type n =
+//		(k * c3 * emitter_area)
+//		/ (log(2.0) * 4.0 * G * hbar);
 
 	const real_type n_geometrized =
 		(emitter_area_geometrized)
@@ -275,7 +284,7 @@ int main(int argc, char** argv)
 
 
 
-	const real_type emitter_mass = c2 * emitter_radius / (2.0 * G);
+//	const real_type emitter_mass = c2 * emitter_radius / (2.0 * G);
 
 	const real_type emitter_mass_geometrized = emitter_radius_geometrized / (2.0);
 
@@ -289,9 +298,8 @@ int main(int argc, char** argv)
 
 	// Random outward, random tangent plane, and quantum graphity connections
 
-	const real_type start_pos = emitter_radius + 100.0;
-	const real_type end_pos = emitter_radius + 1000.0;
-
+	const real_type start_pos = emitter_radius_geometrized + 100.0;// *1e7;
+	const real_type end_pos = emitter_radius_geometrized + 1000.0;// *1e9;
 	const size_t pos_res = 2; // Larger than 1
 	const real_type pos_step_size = (end_pos - start_pos) / (pos_res - 1);
 
@@ -305,7 +313,7 @@ int main(int argc, char** argv)
 		// beta function
 		const long long unsigned int collision_count_plus_integer =
 			get_intersecting_line_count_integer(
-				static_cast<long long unsigned int>(n),
+				static_cast<long long unsigned int>(n_geometrized),
 				emitter_radius_geometrized,
 				receiver_distance_plus,
 				receiver_radius);
@@ -313,7 +321,7 @@ int main(int argc, char** argv)
 		// beta function
 		const long long unsigned int collision_count_integer =
 			get_intersecting_line_count_integer(
-				static_cast<long long unsigned int>(n),
+				static_cast<long long unsigned int>(n_geometrized),
 				emitter_radius_geometrized,
 				receiver_distance,
 				receiver_radius);
@@ -330,10 +338,10 @@ int main(int argc, char** argv)
 			/ (receiver_radius * receiver_radius);
 
 		// Newtonian acceleration
-		const real_type a_Newton =
-			sqrt(
-				(n * G * c * hbar * log(2.0)) /
-				(4 * k * pi * pow(receiver_distance, 4.0)));
+		//const real_type a_Newton =
+		//	sqrt(
+		//		(n * G * c * hbar * log(2.0)) /
+		//		(4 * k * pi * pow(receiver_distance, 4.0)));
 
 		const real_type a_Newton_geometrized =
 			sqrt(
@@ -341,29 +349,29 @@ int main(int argc, char** argv)
 				(4 * pi * pow(receiver_distance, 4.0)));
 
 
-		cout << a_Newton << " " << a_Newton_geometrized << endl;
+		//cout << a_Newton << " " << a_Newton_geometrized << endl;
 
 
 		// Newtonian speed
 //		real_type v_Newton = sqrt(a_Newton * receiver_pos.x);
 
-		// These should match a_Newton
-		const real_type a_flat =
-			gradient_strength * receiver_distance * c * hbar * log(2)
-			/ (k * 2 * pi * emitter_mass);
+		//// These should match a_Newton
+		//const real_type a_flat =
+		//	gradient_strength * receiver_distance * c * hbar * log(2)
+		//	/ (k * 2 * pi * emitter_mass);
 
 		const real_type a_flat_geometrized =
 			gradient_strength * receiver_distance * log(2)
 			/ (2 * pi * emitter_mass_geometrized);
 
-		cout << a_flat << " " << a_flat_geometrized << endl;
+		//cout << a_flat << " " << a_flat_geometrized << endl;
 
 
 //		real_type v_flat = sqrt(a_flat * receiver_pos.x);
 
 		cout << endl;
 
-		cout << a_Newton / a_flat << endl;
+		//cout << a_Newton / a_flat << endl;
 		cout << a_Newton_geometrized / a_flat_geometrized << endl;
 
 		cout << endl << endl;
