@@ -246,7 +246,7 @@ int main(int argc, char** argv)
 
 //	const real_type emitter_radius = sqrt((1e10 * G * hbar * log(2.0)) / (k * c3 * pi));
 
-	const real_type emitter_radius_geometrized = sqrt((1e11 * log(2.0)) / (pi));
+	const real_type emitter_radius_geometrized = sqrt((1e9 * log(2.0)) / (pi));
 	const real_type receiver_radius_geometrized = emitter_radius_geometrized; // Minimum one Planck unit
 
 
@@ -301,7 +301,7 @@ int main(int argc, char** argv)
 
 	const real_type start_pos = emitter_radius_geometrized + receiver_radius_geometrized;// +1000.0;// *1e7;
 	const real_type end_pos = emitter_radius_geometrized + receiver_radius_geometrized + 100.0;// +10000.0;// *1e9;
-	const size_t pos_res = 100; // Larger than 1
+	const size_t pos_res = 2; // Larger than 1
 	const real_type pos_step_size = (end_pos - start_pos) / (pos_res - 1);
 
 	for (size_t i = 0; i < pos_res; i++)
