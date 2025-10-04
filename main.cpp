@@ -197,7 +197,7 @@ int main(int argc, char** argv)
 		metres_to_planck_units(1.0); // Minimum one Planck unit
 
 	const real_type emitter_radius_geometrized = 
-		sqrt(1e9 * log(2.0) / pi);
+		sqrt(1e10 * log(2.0) / pi);
 
 	const real_type emitter_area_geometrized =
 		4.0 * pi 
@@ -215,9 +215,12 @@ int main(int argc, char** argv)
 
 	// Random outward, random tangent plane, and quantum graphity connections
 
-	const real_type start_pos = metres_to_planck_units(100.0);
+	const real_type start_pos = 
+		emitter_radius_geometrized 
+		+ receiver_radius_geometrized;
+
 	const real_type end_pos = metres_to_planck_units(1000.0);
-	const size_t pos_res = 10; // Larger than 1
+	const size_t pos_res = 100; // Larger than 1
 	const real_type pos_step_size = 
 		(end_pos - start_pos) 
 		/ (pos_res - 1);
