@@ -132,28 +132,6 @@ vector_3 random_unit_vector(void)
 	return vector_3(x, y, z).normalize();
 }
 
-vector_3 slerp(vector_3 s0, vector_3 s1, const real_type t)
-{
-	vector_3 s0_norm = s0;
-	s0_norm.normalize();
-
-	vector_3 s1_norm = s1;
-	s1_norm.normalize();
-
-	const real_type cos_angle = s0_norm.dot(s1_norm);
-	const real_type angle = acos(cos_angle);
-
-	const real_type p0_factor = sin((1 - t) * angle) / sin(angle);
-	const real_type p1_factor = sin(t * angle) / sin(angle);
-
-	return s0 * p0_factor + s1 * p1_factor;
-}
-
-real_type Lerp(real_type a, real_type b, real_type t)
-{
-	return a + t * (b - a);
-}
-
 bool circle_intersect(
 	const vector_3 location,
 	const vector_3 normal,
@@ -215,32 +193,44 @@ int main(int argc, char** argv)
 {
 	ofstream outfile("ratio");
 
-	const real_type emitter_radius_geometrized = sqrt((1e10 * log(2.0)) / (pi));
-	const real_type receiver_radius_geometrized = metres_to_planck_units(1.0); //emitter_radius_geometrized; // Minimum one Planck unit
+	const real_type receiver_radius_geometrized = 
+		metres_to_planck_units(1.0); // Minimum one Planck unit
+
+	const real_type emitter_radius_geometrized = 
+		sqrt(1e9 * log(2.0) / pi);
 
 	const real_type emitter_area_geometrized =
-		4.0 * pi * emitter_radius_geometrized * emitter_radius_geometrized;
+		4.0 * pi 
+		* emitter_radius_geometrized 
+		* emitter_radius_geometrized;
 
 	// Field line count
 	const real_type n_geometrized =
-		(emitter_area_geometrized)
+		emitter_area_geometrized
 		/ (log(2.0) * 4.0);
 
-	const real_type emitter_mass_geometrized = emitter_radius_geometrized / (2.0);
+	const real_type emitter_mass_geometrized = 
+		emitter_radius_geometrized 
+		/ 2.0;
 
 	// Random outward, random tangent plane, and quantum graphity connections
 
-	const real_type start_pos = metres_to_planck_units(100.0);// emitter_radius_geometrized + receiver_radius_geometrized;// +1000.0;// *1e7;
-	const real_type end_pos = metres_to_planck_units(1000.0); //emitter_radius_geometrized + receiver_radius_geometrized + 100.0;// +10000.0;// *1e9;
+	const real_type start_pos = metres_to_planck_units(100.0);
+	const real_type end_pos = metres_to_planck_units(1000.0);
 	const size_t pos_res = 10; // Larger than 1
-	const real_type pos_step_size = (end_pos - start_pos) / (pos_res - 1);
+	const real_type pos_step_size = 
+		(end_pos - start_pos) 
+		/ (pos_res - 1);
 
 	for (size_t i = 0; i < pos_res; i++)
 	{
-		const real_type epsilon = 0.01 * receiver_radius_geometrized;
+		const real_type epsilon = 
+			0.01 * receiver_radius_geometrized;
 
-		const real_type receiver_distance_geometrized = start_pos + i * pos_step_size;
-		const real_type receiver_distance_plus_geometrized = receiver_distance_geometrized + epsilon;
+		const real_type receiver_distance_geometrized = 
+			start_pos + i * pos_step_size;
+		const real_type receiver_distance_plus_geometrized = 
+			receiver_distance_geometrized + epsilon;
 
 		// beta function
 		const long long unsigned int collision_count_plus_integer =
@@ -260,18 +250,22 @@ int main(int argc, char** argv)
 
 		// alpha variable
 		const real_type gradient_integer =
-			(static_cast<real_type>(collision_count_plus_integer) - static_cast<real_type>(collision_count_integer))
+			(static_cast<real_type>(collision_count_plus_integer) 
+			- static_cast<real_type>(collision_count_integer))
 			/ epsilon;
 
 		// g variable
 		real_type gradient_strength =
 			-gradient_integer 
-			/ (receiver_radius_geometrized * receiver_radius_geometrized);
+			/ 
+			(receiver_radius_geometrized 
+			* receiver_radius_geometrized);
 
 		const real_type a_Newton_geometrized =
 			sqrt(
-				(n_geometrized * log(2.0)) /
-				(4 * pi * pow(receiver_distance_geometrized, 4.0)));
+				(n_geometrized * log(2.0)) 
+				/ (4 * pi * pow(receiver_distance_geometrized, 4.0))
+			);
 
 		const real_type a_flat_geometrized =
 			gradient_strength * receiver_distance_geometrized * log(2)
@@ -281,7 +275,10 @@ int main(int argc, char** argv)
 		cout << a_Newton_geometrized / a_flat_geometrized << endl;
 		cout << endl << endl;
 
-		outfile << receiver_radius_geometrized << " " << (a_Newton_geometrized / a_flat_geometrized) << endl;
+		outfile << receiver_radius_geometrized << 
+			" " << 
+			(a_Newton_geometrized / a_flat_geometrized) << 
+			endl;
 	}
 
 }
