@@ -64,7 +64,7 @@ const real_type hbar = h / (2.0 * pi);
 
 const real_type k = 1.380649e-23;
 
-
+const real_type planck_length = sqrt(hbar * G / c3);
 
 
 #endif

@@ -205,13 +205,18 @@ long long unsigned int get_intersecting_line_count_integer(
 	return count;
 }
 
+real_type metres_to_planck_units(const real_type m)
+{
+	return m / planck_length;
+}
+
 
 int main(int argc, char** argv)
 {
 	ofstream outfile("ratio");
 
-	const real_type emitter_radius_geometrized = sqrt((1e9 * log(2.0)) / (pi));
-	const real_type receiver_radius_geometrized = emitter_radius_geometrized; // Minimum one Planck unit
+	const real_type emitter_radius_geometrized = sqrt((1e10 * log(2.0)) / (pi));
+	const real_type receiver_radius_geometrized = metres_to_planck_units(1.0); //emitter_radius_geometrized; // Minimum one Planck unit
 
 	const real_type emitter_area_geometrized =
 		4.0 * pi * emitter_radius_geometrized * emitter_radius_geometrized;
@@ -225,14 +230,14 @@ int main(int argc, char** argv)
 
 	// Random outward, random tangent plane, and quantum graphity connections
 
-	const real_type start_pos = emitter_radius_geometrized + receiver_radius_geometrized;// +1000.0;// *1e7;
-	const real_type end_pos = emitter_radius_geometrized + receiver_radius_geometrized + 100.0;// +10000.0;// *1e9;
+	const real_type start_pos = metres_to_planck_units(100.0);// emitter_radius_geometrized + receiver_radius_geometrized;// +1000.0;// *1e7;
+	const real_type end_pos = metres_to_planck_units(1000.0); //emitter_radius_geometrized + receiver_radius_geometrized + 100.0;// +10000.0;// *1e9;
 	const size_t pos_res = 10; // Larger than 1
 	const real_type pos_step_size = (end_pos - start_pos) / (pos_res - 1);
 
 	for (size_t i = 0; i < pos_res; i++)
 	{
-		const real_type epsilon = 0.01;
+		const real_type epsilon = 0.01 * receiver_radius_geometrized;
 
 		const real_type receiver_distance_geometrized = start_pos + i * pos_step_size;
 		const real_type receiver_distance_plus_geometrized = receiver_distance_geometrized + epsilon;
