@@ -263,7 +263,7 @@ int main(int argc, char** argv)
 
 		const real_type a_Newton_geometrized =
 			sqrt(
-				(n_geometrized * log(2.0)) 
+				n_geometrized * log(2.0)
 				/ (4 * pi * pow(receiver_distance_geometrized, 4.0))
 			);
 
