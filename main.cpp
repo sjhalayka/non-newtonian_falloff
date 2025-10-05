@@ -221,9 +221,9 @@ int main(int argc, char** argv)
 
 	real_type end_pos = start_pos * 10;// metres_to_planck_units(1000.0);
 
-	swap(end_pos, start_pos);
+//	swap(end_pos, start_pos);
 
-	const size_t pos_res = 100; // Larger than 1
+	const size_t pos_res = 10; // Larger than 1
 
 	const real_type pos_step_size = 
 		(end_pos - start_pos) 
