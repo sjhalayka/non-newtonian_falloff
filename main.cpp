@@ -28,13 +28,13 @@ std::optional<real_type> intersectRaySphere(const Ray& ray, const Sphere& sphere
 	if (discriminant < 0.0f)
 		return std::nullopt; // no intersection
 
-	real_type sqrtD = std::sqrt(discriminant);
+	real_type sqrtD = sqrt(discriminant);
 	real_type t1 = (-b - sqrtD) / (2.0f * a);
 	real_type t2 = (-b + sqrtD) / (2.0f * a);
 
 	// Return the nearest positive t (intersection distance)
 	if (t1 > 0.0f && t2 > 0.0f)
-		return std::min(t1, t2);
+		return min(t1, t2);
 	else if (t1 > 0.0f)
 		return t1;
 	else if (t2 > 0.0f)
@@ -67,7 +67,9 @@ bool circle_intersect(
 	Sphere sphere{ {receiver_distance, 0.0, 0.0}, receiver_radius };
 
 	optional<real_type> t = intersectRaySphere(ray, sphere);
-	if (t) {
+	
+	if (t)
+	{
 		//vector_3 hitPoint = ray.origin + ray.dir * (*t);
 		//std::cout << "Hit at distance " << *t
 		//	<< " at point (" << hitPoint.x << ", "
