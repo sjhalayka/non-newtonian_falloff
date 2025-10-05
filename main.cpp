@@ -215,11 +215,13 @@ int main(int argc, char** argv)
 
 	// Random outward, random tangent plane, and quantum graphity connections
 
-	const real_type start_pos = 
+	real_type start_pos = 
 		emitter_radius_geometrized 
 		+ receiver_radius_geometrized;
 
-	const real_type end_pos = metres_to_planck_units(1000.0);
+	real_type end_pos = start_pos * 10;// metres_to_planck_units(1000.0);
+
+	swap(end_pos, start_pos);
 
 	const size_t pos_res = 100; // Larger than 1
 
@@ -229,8 +231,8 @@ int main(int argc, char** argv)
 
 	for (size_t i = 0; i < pos_res; i++)
 	{
-		const real_type epsilon = 
-			0.01 * receiver_radius_geometrized;
+		const real_type epsilon =
+			metres_to_planck_units(0.01);// *receiver_radius_geometrized;
 
 		const real_type receiver_distance_geometrized = 
 			start_pos + i * pos_step_size;
