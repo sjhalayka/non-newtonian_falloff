@@ -12,24 +12,25 @@ struct Ray {
 
 struct Sphere {
 	vector_3 center;
-	float radius;
+	real_type radius;
 };
 
 // Returns the closest positive intersection distance, if any.
-std::optional<float> intersectRaySphere(const Ray& ray, const Sphere& sphere) {
+std::optional<real_type> intersectRaySphere(const Ray& ray, const Sphere& sphere) 
+{
 	vector_3 oc = ray.origin - sphere.center;
 
-	float a = ray.dir.dot(ray.dir);
-	float b = 2.0f * oc.dot(ray.dir);
-	float c = oc.dot(oc) - sphere.radius * sphere.radius;
+	real_type a = ray.dir.dot(ray.dir);
+	real_type b = 2.0f * oc.dot(ray.dir);
+	real_type c = oc.dot(oc) - sphere.radius * sphere.radius;
 
-	float discriminant = b * b - 4 * a * c;
+	real_type discriminant = b * b - 4 * a * c;
 	if (discriminant < 0.0f)
 		return std::nullopt; // no intersection
 
-	float sqrtD = std::sqrt(discriminant);
-	float t1 = (-b - sqrtD) / (2.0f * a);
-	float t2 = (-b + sqrtD) / (2.0f * a);
+	real_type sqrtD = std::sqrt(discriminant);
+	real_type t1 = (-b - sqrtD) / (2.0f * a);
+	real_type t2 = (-b + sqrtD) / (2.0f * a);
 
 	// Return the nearest positive t (intersection distance)
 	if (t1 > 0.0f && t2 > 0.0f)
@@ -61,25 +62,11 @@ bool circle_intersect(
 	const real_type receiver_distance,
 	const real_type receiver_radius)
 {
-	//Ray r(location, normal);
+	Ray ray{ location, normal };
 
-	//Sphere s(vector_3(receiver_distance, 0, 0), receiver_radius);
-	//double t_hit = 0;
+	Sphere sphere{ {receiver_distance, 0.0, 0.0}, receiver_radius };
 
-	//std::optional<HitInfo> hit = raySphereIntersectOptimized(r, s);
-
-	//if (hit)
-	//	return true;
-	//else
-	//	return false;
-
-
-	Ray ray{ location, normal }; // origin at (0,0,0), points +z
-	ray.dir = ray.dir.normalize();
-
-	Sphere sphere{ {receiver_distance, 0.0f, 0.0f}, receiver_radius };
-
-	auto t = intersectRaySphere(ray, sphere);
+	optional<real_type> t = intersectRaySphere(ray, sphere);
 	if (t) {
 		//vector_3 hitPoint = ray.origin + ray.dir * (*t);
 		//std::cout << "Hit at distance " << *t
