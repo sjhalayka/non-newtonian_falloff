@@ -220,7 +220,9 @@ int main(int argc, char** argv)
 		+ receiver_radius_geometrized;
 
 	const real_type end_pos = metres_to_planck_units(1000.0);
+
 	const size_t pos_res = 100; // Larger than 1
+
 	const real_type pos_step_size = 
 		(end_pos - start_pos) 
 		/ (pos_res - 1);
@@ -232,6 +234,7 @@ int main(int argc, char** argv)
 
 		const real_type receiver_distance_geometrized = 
 			start_pos + i * pos_step_size;
+
 		const real_type receiver_distance_plus_geometrized = 
 			receiver_distance_geometrized + epsilon;
 
