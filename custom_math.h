@@ -3,7 +3,7 @@
 
 
 
-typedef long double real_type;
+typedef double real_type;
 
 
 

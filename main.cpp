@@ -1,123 +1,46 @@
 #include "main.h"
 
 
+
+// https://chatgpt.com/c/68e2df9e-b1c8-832e-a627-9fac8a379675
+
+
 struct Ray {
 	vector_3 origin;
-	vector_3 direction; // Should be normalized
-
-	Ray(const vector_3& o, vector_3 d) : origin(o), direction(d)
-	{
-		direction.normalize();
-	}
-
-	vector_3 at(real_type t) const {
-
-		vector_3 d(direction.x * t, direction.y * t, direction.z * t);
-
-		vector_3 o = origin;
-		o.x += d.x;
-		o.y += d.y;
-		o.z += d.z;
-
-		return o;
-	}
+	vector_3 dir;  // should be normalized
 };
 
 struct Sphere {
 	vector_3 center;
-	real_type radius;
-
-	Sphere(const vector_3& c, real_type r) : center(c), radius(r) {}
+	float radius;
 };
 
-struct HitInfo {
-	real_type t;           // Distance along ray
-	vector_3 point;        // Intersection point
-	vector_3 normal;       // Surface normal at hit point
-	bool frontFace;    // Did ray hit from outside?
-};
-
-// Ray-sphere intersection using geometric method
-std::optional<HitInfo> raySphereIntersect(const Ray& ray, const Sphere& sphere) {
+// Returns the closest positive intersection distance, if any.
+std::optional<float> intersectRaySphere(const Ray& ray, const Sphere& sphere) {
 	vector_3 oc = ray.origin - sphere.center;
 
-	// Quadratic equation coefficients: at^2 + bt + c = 0
-	real_type a = ray.direction.dot(ray.direction);
-	real_type b = 2.0f * oc.dot(ray.direction);
-	real_type c = oc.dot(oc) - sphere.radius * sphere.radius;
+	float a = ray.dir.dot(ray.dir);
+	float b = 2.0f * oc.dot(ray.dir);
+	float c = oc.dot(oc) - sphere.radius * sphere.radius;
 
-	real_type discriminant = b * b - 4 * a * c;
+	float discriminant = b * b - 4 * a * c;
+	if (discriminant < 0.0f)
+		return std::nullopt; // no intersection
 
-	// No intersection
-	if (discriminant < 0) {
+	float sqrtD = std::sqrt(discriminant);
+	float t1 = (-b - sqrtD) / (2.0f * a);
+	float t2 = (-b + sqrtD) / (2.0f * a);
+
+	// Return the nearest positive t (intersection distance)
+	if (t1 > 0.0f && t2 > 0.0f)
+		return std::min(t1, t2);
+	else if (t1 > 0.0f)
+		return t1;
+	else if (t2 > 0.0f)
+		return t2;
+	else
 		return std::nullopt;
-	}
-
-	// Calculate nearest intersection
-	real_type sqrtDisc = std::sqrt(discriminant);
-	real_type t = (-b - sqrtDisc) / (2.0f * a);
-
-	// If nearest point is behind ray origin, try far intersection
-	if (t < 0.001f) {
-		t = (-b + sqrtDisc) / (2.0f * a);
-		if (t < 0.001f) {
-			return std::nullopt; // Both intersections behind ray
-		}
-	}
-
-	// Calculate hit information
-	HitInfo hit;
-	hit.t = t;
-	hit.point = ray.at(t);
-	hit.normal = (hit.point - sphere.center).normalize();
-	hit.frontFace = ray.direction.dot(hit.normal) < 0;
-
-	// Flip normal if hit from inside
-	if (!hit.frontFace) {
-		hit.normal = hit.normal * -1.0f;
-	}
-
-	return hit;
 }
-
-// Optimized version using reduced quadratic form
-std::optional<HitInfo> raySphereIntersectOptimized(const Ray& ray, const Sphere& sphere) {
-	vector_3 oc = ray.origin - sphere.center;
-
-	// Using half-b optimization: t^2 + (2h)t + c = 0
-	real_type a = ray.direction.dot(ray.direction);
-	real_type h = oc.dot(ray.direction);
-	real_type c = oc.dot(oc) - sphere.radius * sphere.radius;
-
-	real_type discriminant = h * h - a * c;
-
-	if (discriminant < 0) {
-		return std::nullopt;
-	}
-
-	real_type sqrtDisc = std::sqrt(discriminant);
-	real_type t = (-h - sqrtDisc) / a;
-
-	if (t < 0.001f) {
-		t = (-h + sqrtDisc) / a;
-		if (t < 0.001f) {
-			return std::nullopt;
-		}
-	}
-
-	HitInfo hit;
-	hit.t = t;
-	hit.point = ray.at(t);
-	hit.normal = (hit.point - sphere.center).normalize();
-	hit.frontFace = ray.direction.dot(hit.normal) < 0;
-
-	if (!hit.frontFace) {
-		hit.normal = hit.normal * -1.0f;
-	}
-
-	return hit;
-}
-
 
 
 vector_3 random_unit_vector(void)
@@ -134,22 +57,70 @@ vector_3 random_unit_vector(void)
 
 bool circle_intersect(
 	const vector_3 location,
-	const vector_3 normal,
+	const vector_3 normal, 
 	const real_type receiver_distance,
 	const real_type receiver_radius)
 {
-	Ray r(location, normal);
+	//Ray r(location, normal);
 
-	Sphere s(vector_3(receiver_distance, 0, 0), receiver_radius);
-	double t_hit = 0;
+	//Sphere s(vector_3(receiver_distance, 0, 0), receiver_radius);
+	//double t_hit = 0;
 
-	std::optional<HitInfo> hit = raySphereIntersectOptimized(r, s);
+	//std::optional<HitInfo> hit = raySphereIntersectOptimized(r, s);
 
-	if (hit)
+	//if (hit)
+	//	return true;
+	//else
+	//	return false;
+
+
+	Ray ray{ location, normal }; // origin at (0,0,0), points +z
+	ray.dir = ray.dir.normalize();
+
+	Sphere sphere{ {receiver_distance, 0.0f, 0.0f}, receiver_radius };
+
+	auto t = intersectRaySphere(ray, sphere);
+	if (t) {
+		//vector_3 hitPoint = ray.origin + ray.dir * (*t);
+		//std::cout << "Hit at distance " << *t
+		//	<< " at point (" << hitPoint.x << ", "
+		//	<< hitPoint.y << ", " << hitPoint.z << ")\n";
+
 		return true;
-	else
-		return false;
+	}
+
+	return false;
+
+
+
+
+	//const vector_3 circle_origin(receiver_distance, 0, 0);
+
+	//if (normal.dot(circle_origin) <= 0)
+	//	return false;
+
+	//vector_3 v;
+	//v.x = location.x + normal.x;
+	//v.y = location.y + normal.y;
+	//v.z = location.z + normal.z;
+
+	//const real_type ratio = v.x / circle_origin.x;
+
+	//v.y = v.y / ratio;
+	//v.z = v.z / ratio;
+	//v.x = circle_origin.x;
+
+	//vector_3 v2;
+	//v2.x = circle_origin.x - v.x;
+	//v2.y = circle_origin.y - v.y;
+	//v2.z = circle_origin.z - v.z;
+
+	//if (v2.length() > receiver_radius)
+	//	return false;
+
+	//return true;
 }
+
 
 long long unsigned int get_intersecting_line_count_integer(
 	const long long unsigned int n,
@@ -158,6 +129,10 @@ long long unsigned int get_intersecting_line_count_integer(
 	const real_type receiver_radius
 )
 {
+	
+	// Random outward, random tangent plane, and quantum graphity connections
+
+
 	long long unsigned int count = 0;
 
 	generator.seed(static_cast<unsigned>(0));
@@ -192,12 +167,18 @@ real_type metres_to_planck_units(const real_type m)
 int main(int argc, char** argv)
 {
 	ofstream outfile("ratio");
+	outfile << setprecision(30);
 
-	const real_type receiver_radius_geometrized = 
-		metres_to_planck_units(1.0); // Minimum one Planck unit
+
 
 	const real_type emitter_radius_geometrized = 
-		sqrt(1e10 * log(2.0) / pi);
+		sqrt(1e9 * log(2.0) / pi);
+
+	const real_type receiver_radius_geometrized =
+		emitter_radius_geometrized;// 1.0;// metres_to_planck_units(1.0); // Minimum one Planck unit
+
+
+
 
 	const real_type emitter_area_geometrized =
 		4.0 * pi 
@@ -213,13 +194,12 @@ int main(int argc, char** argv)
 		emitter_radius_geometrized 
 		/ 2.0;
 
-	// Random outward, random tangent plane, and quantum graphity connections
-
 	real_type start_pos = 
 		emitter_radius_geometrized 
 		+ receiver_radius_geometrized;
 
-	real_type end_pos = start_pos * 10;// metres_to_planck_units(1000.0);
+	real_type end_pos = start_pos * 100;// metres_to_planck_units(1000.0);
+
 
 //	swap(end_pos, start_pos);
 
@@ -231,11 +211,11 @@ int main(int argc, char** argv)
 
 	for (size_t i = 0; i < pos_res; i++)
 	{
-		const real_type epsilon =
-			metres_to_planck_units(0.01);// *receiver_radius_geometrized;
-
 		const real_type receiver_distance_geometrized = 
 			start_pos + i * pos_step_size;
+
+		const real_type epsilon =
+			0.01 * receiver_distance_geometrized;
 
 		const real_type receiver_distance_plus_geometrized = 
 			receiver_distance_geometrized + epsilon;
@@ -280,6 +260,7 @@ int main(int argc, char** argv)
 			/ (2 * pi * emitter_mass_geometrized);
 
 		cout << endl;
+		cout << collision_count_plus_integer << " " << collision_count_integer << endl;
 		cout << a_Newton_geometrized / a_flat_geometrized << endl;
 		cout << endl << endl;
 
