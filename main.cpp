@@ -59,18 +59,6 @@ bool circle_intersect(
 	const real_type receiver_distance,
 	const real_type receiver_radius)
 {
-	//Ray r(location, normal);
-
-	//Sphere s(vector_3(receiver_distance, 0, 0), receiver_radius);
-	//double t_hit = 0;
-
-	//std::optional<HitInfo> hit = raySphereIntersectOptimized(r, s);
-
-	//if (hit)
-	//	return true;
-	//else
-	//	return false;
-
 	Ray ray{ location, normal };
 
 	Sphere sphere{ {receiver_distance, 0.0, 0.0}, receiver_radius };
@@ -159,11 +147,11 @@ int main(int argc, char** argv)
 {
 	ofstream outfile("ratio");
 
-	const real_type receiver_radius_geometrized =
-		metres_to_planck_units(1.0); // Minimum one Planck unit
-
 	const real_type emitter_radius_geometrized =
-		sqrt(1e8 * log(2.0) / pi);
+		sqrt(1e10 * log(2.0) / pi);
+
+	const real_type receiver_radius_geometrized =
+		emitter_radius_geometrized;// metres_to_planck_units(1.0); // Minimum one Planck unit
 
 	const real_type emitter_area_geometrized =
 		4.0 * pi
@@ -185,7 +173,7 @@ int main(int argc, char** argv)
 		emitter_radius_geometrized
 		+ receiver_radius_geometrized;
 
-	real_type end_pos = start_pos * 10;// metres_to_planck_units(1000.0);
+	real_type end_pos = start_pos * 100;// metres_to_planck_units(1000.0);
 
 	//	swap(end_pos, start_pos);
 
@@ -198,7 +186,7 @@ int main(int argc, char** argv)
 	for (size_t i = 0; i < pos_res; i++)
 	{
 		const real_type epsilon =
-			metres_to_planck_units(0.01);// *receiver_radius_geometrized;
+			0.01 * receiver_radius_geometrized;// metres_to_planck_units(0.01);	
 
 		const real_type receiver_distance_geometrized =
 			start_pos + i * pos_step_size;
@@ -233,7 +221,7 @@ int main(int argc, char** argv)
 			-gradient_integer
 			/
 			(receiver_radius_geometrized
-				* receiver_radius_geometrized);
+			* receiver_radius_geometrized);
 
 		const real_type a_Newton_geometrized =
 			sqrt(
@@ -249,7 +237,7 @@ int main(int argc, char** argv)
 		cout << a_Newton_geometrized / a_flat_geometrized << endl;
 		cout << endl << endl;
 
-		outfile << receiver_radius_geometrized <<
+		outfile << receiver_distance_geometrized <<
 			" " <<
 			(a_Newton_geometrized / a_flat_geometrized) <<
 			endl;
