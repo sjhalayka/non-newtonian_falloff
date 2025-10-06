@@ -1,10 +1,6 @@
 #include "main.h"
 
 
-
-// https://chatgpt.com/c/68e2df9e-b1c8-832e-a627-9fac8a379675
-
-
 struct Ray {
 	vector_3 origin;
 	vector_3 dir;  // should be normalized
@@ -16,7 +12,7 @@ struct Sphere {
 };
 
 // Returns the closest positive intersection distance, if any.
-std::optional<real_type> intersectRaySphere(const Ray& ray, const Sphere& sphere) 
+std::optional<real_type> intersectRaySphere(const Ray& ray, const Sphere& sphere)
 {
 	vector_3 oc = ray.origin - sphere.center;
 
@@ -44,6 +40,7 @@ std::optional<real_type> intersectRaySphere(const Ray& ray, const Sphere& sphere
 }
 
 
+
 vector_3 random_unit_vector(void)
 {
 	const real_type z = dis(generator) * 2.0 - 1.0;
@@ -58,16 +55,28 @@ vector_3 random_unit_vector(void)
 
 bool circle_intersect(
 	const vector_3 location,
-	const vector_3 normal, 
+	const vector_3 normal,
 	const real_type receiver_distance,
 	const real_type receiver_radius)
 {
+	//Ray r(location, normal);
+
+	//Sphere s(vector_3(receiver_distance, 0, 0), receiver_radius);
+	//double t_hit = 0;
+
+	//std::optional<HitInfo> hit = raySphereIntersectOptimized(r, s);
+
+	//if (hit)
+	//	return true;
+	//else
+	//	return false;
+
 	Ray ray{ location, normal };
 
 	Sphere sphere{ {receiver_distance, 0.0, 0.0}, receiver_radius };
 
 	optional<real_type> t = intersectRaySphere(ray, sphere);
-	
+
 	if (t)
 	{
 		//vector_3 hitPoint = ray.origin + ray.dir * (*t);
@@ -79,9 +88,6 @@ bool circle_intersect(
 	}
 
 	return false;
-
-
-
 
 	//const vector_3 circle_origin(receiver_distance, 0, 0);
 
@@ -108,8 +114,8 @@ bool circle_intersect(
 	//	return false;
 
 	//return true;
-}
 
+}
 
 long long unsigned int get_intersecting_line_count_integer(
 	const long long unsigned int n,
@@ -118,10 +124,6 @@ long long unsigned int get_intersecting_line_count_integer(
 	const real_type receiver_radius
 )
 {
-	
-	// Random outward, random tangent plane, and quantum graphity connections
-
-
 	long long unsigned int count = 0;
 
 	generator.seed(static_cast<unsigned>(0));
@@ -156,22 +158,16 @@ real_type metres_to_planck_units(const real_type m)
 int main(int argc, char** argv)
 {
 	ofstream outfile("ratio");
-	outfile << setprecision(30);
-
-
-
-	const real_type emitter_radius_geometrized = 
-		sqrt(1e9 * log(2.0) / pi);
 
 	const real_type receiver_radius_geometrized =
-		emitter_radius_geometrized;// 1.0;// metres_to_planck_units(1.0); // Minimum one Planck unit
+		metres_to_planck_units(1.0); // Minimum one Planck unit
 
-
-
+	const real_type emitter_radius_geometrized =
+		sqrt(1e8 * log(2.0) / pi);
 
 	const real_type emitter_area_geometrized =
-		4.0 * pi 
-		* emitter_radius_geometrized 
+		4.0 * pi
+		* emitter_radius_geometrized
 		* emitter_radius_geometrized;
 
 	// Field line count
@@ -179,34 +175,35 @@ int main(int argc, char** argv)
 		emitter_area_geometrized
 		/ (log(2.0) * 4.0);
 
-	const real_type emitter_mass_geometrized = 
-		emitter_radius_geometrized 
+	const real_type emitter_mass_geometrized =
+		emitter_radius_geometrized
 		/ 2.0;
 
-	real_type start_pos = 
-		emitter_radius_geometrized 
+	// Random outward, random tangent plane, and quantum graphity connections
+
+	real_type start_pos =
+		emitter_radius_geometrized
 		+ receiver_radius_geometrized;
 
-	real_type end_pos = start_pos * 100;// metres_to_planck_units(1000.0);
+	real_type end_pos = start_pos * 10;// metres_to_planck_units(1000.0);
 
-
-//	swap(end_pos, start_pos);
+	//	swap(end_pos, start_pos);
 
 	const size_t pos_res = 10; // Larger than 1
 
-	const real_type pos_step_size = 
-		(end_pos - start_pos) 
+	const real_type pos_step_size =
+		(end_pos - start_pos)
 		/ (pos_res - 1);
 
 	for (size_t i = 0; i < pos_res; i++)
 	{
-		const real_type receiver_distance_geometrized = 
+		const real_type epsilon =
+			metres_to_planck_units(0.01);// *receiver_radius_geometrized;
+
+		const real_type receiver_distance_geometrized =
 			start_pos + i * pos_step_size;
 
-		const real_type epsilon =
-			0.01 * receiver_distance_geometrized;
-
-		const real_type receiver_distance_plus_geometrized = 
+		const real_type receiver_distance_plus_geometrized =
 			receiver_distance_geometrized + epsilon;
 
 		// beta function
@@ -227,16 +224,16 @@ int main(int argc, char** argv)
 
 		// alpha variable
 		const real_type gradient_integer =
-			(static_cast<real_type>(collision_count_plus_integer) 
-			- static_cast<real_type>(collision_count_integer))
+			(static_cast<real_type>(collision_count_plus_integer)
+				- static_cast<real_type>(collision_count_integer))
 			/ epsilon;
 
 		// g variable
 		real_type gradient_strength =
-			-gradient_integer 
-			/ 
-			(receiver_radius_geometrized 
-			* receiver_radius_geometrized);
+			-gradient_integer
+			/
+			(receiver_radius_geometrized
+				* receiver_radius_geometrized);
 
 		const real_type a_Newton_geometrized =
 			sqrt(
@@ -249,13 +246,12 @@ int main(int argc, char** argv)
 			/ (2 * pi * emitter_mass_geometrized);
 
 		cout << endl;
-		cout << collision_count_plus_integer << " " << collision_count_integer << endl;
 		cout << a_Newton_geometrized / a_flat_geometrized << endl;
 		cout << endl << endl;
 
-		outfile << receiver_radius_geometrized << 
-			" " << 
-			(a_Newton_geometrized / a_flat_geometrized) << 
+		outfile << receiver_radius_geometrized <<
+			" " <<
+			(a_Newton_geometrized / a_flat_geometrized) <<
 			endl;
 	}
 
