@@ -53,7 +53,7 @@ vector_3 random_unit_vector(void)
 	return vector_3(x, y, z).normalize();
 }
 
-bool circle_intersect(
+bool intersect(
 	const vector_3 location,
 	const vector_3 normal,
 	const real_type receiver_distance,
@@ -61,7 +61,7 @@ bool circle_intersect(
 {
 	Ray ray{ location, normal };
 
-	Sphere sphere{ {receiver_distance, 0.0, 0.0}, receiver_radius };
+	Sphere sphere{ { receiver_distance, 0.0, 0.0 }, receiver_radius };
 
 	optional<real_type> t = intersectRaySphere(ray, sphere);
 
@@ -77,6 +77,12 @@ bool circle_intersect(
 
 	return false;
 
+
+
+
+
+	// Approximate using a circle
+	// 
 	//const vector_3 circle_origin(receiver_distance, 0, 0);
 
 	//if (normal.dot(circle_origin) <= 0)
@@ -109,8 +115,7 @@ long long unsigned int get_intersecting_line_count_integer(
 	const long long unsigned int n,
 	const real_type emitter_radius,
 	const real_type receiver_distance,
-	const real_type receiver_radius
-)
+	const real_type receiver_radius)
 {
 	long long unsigned int count = 0;
 
@@ -130,7 +135,7 @@ long long unsigned int get_intersecting_line_count_integer(
 		location.y *= emitter_radius;
 		location.z *= emitter_radius;
 
-		if (circle_intersect(location, normal, receiver_distance, receiver_radius))
+		if (intersect(location, normal, receiver_distance, receiver_radius))
 			count++;
 	}
 
@@ -148,10 +153,10 @@ int main(int argc, char** argv)
 	ofstream outfile("ratio");
 
 	const real_type emitter_radius_geometrized =
-		sqrt(1e10 * log(2.0) / pi);
+		sqrt(1e9 * log(2.0) / pi);
 
 	const real_type receiver_radius_geometrized =
-		emitter_radius_geometrized;// metres_to_planck_units(1.0); // Minimum one Planck unit
+		emitter_radius_geometrized; // Minimum one Planck unit
 
 	const real_type emitter_area_geometrized =
 		4.0 * pi
@@ -173,11 +178,11 @@ int main(int argc, char** argv)
 		emitter_radius_geometrized
 		+ receiver_radius_geometrized;
 
-	real_type end_pos = start_pos * 100;// metres_to_planck_units(1000.0);
+	real_type end_pos = start_pos * 3;
 
-	//	swap(end_pos, start_pos);
+	swap(end_pos, start_pos);
 
-	const size_t pos_res = 10; // Larger than 1
+	const size_t pos_res = 25; // Larger than 1
 
 	const real_type pos_step_size =
 		(end_pos - start_pos)
@@ -186,7 +191,7 @@ int main(int argc, char** argv)
 	for (size_t i = 0; i < pos_res; i++)
 	{
 		const real_type epsilon =
-			0.01 * receiver_radius_geometrized;// metres_to_planck_units(0.01);	
+			0.01 * receiver_radius_geometrized;	
 
 		const real_type receiver_distance_geometrized =
 			start_pos + i * pos_step_size;
@@ -223,6 +228,14 @@ int main(int argc, char** argv)
 			(receiver_radius_geometrized
 			* receiver_radius_geometrized);
 
+		real_type g_approx = 
+			n_geometrized 
+			/ (2 * pow(receiver_distance_geometrized, 3.0));
+
+
+		cout << g_approx / gradient_strength << endl;
+
+
 		const real_type a_Newton_geometrized =
 			sqrt(
 				n_geometrized * log(2.0)
@@ -236,6 +249,7 @@ int main(int argc, char** argv)
 		cout << endl;
 		cout << a_Newton_geometrized / a_flat_geometrized << endl;
 		cout << endl << endl;
+
 
 		outfile << receiver_distance_geometrized <<
 			" " <<
