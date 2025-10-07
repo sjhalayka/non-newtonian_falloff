@@ -188,10 +188,12 @@ int main(int argc, char** argv)
 		(end_pos - start_pos)
 		/ (pos_res - 1);
 
+	const real_type epsilon =
+		0.01 * receiver_radius_geometrized;
+
 	for (size_t i = 0; i < pos_res; i++)
 	{
-		const real_type epsilon =
-			0.01 * receiver_radius_geometrized;	
+
 
 		const real_type receiver_distance_geometrized =
 			start_pos + i * pos_step_size;
@@ -254,10 +256,10 @@ int main(int argc, char** argv)
 		cout << endl << endl;
 
 
-		//outfile << receiver_distance_geometrized <<
-		//	" " <<
-		//	(a_Newton_geometrized / a_flat_geometrized) <<
-		//	endl;
+		outfile << receiver_distance_geometrized <<
+			" " <<
+			(a_Newton_geometrized / a_flat_geometrized) <<
+			endl;
 	}
 
 }
