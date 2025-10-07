@@ -180,7 +180,7 @@ int main(int argc, char** argv)
 
 	real_type end_pos = start_pos * 3;
 
-	swap(end_pos, start_pos);
+	//swap(end_pos, start_pos);
 
 	const size_t pos_res = 25; // Larger than 1
 
@@ -228,13 +228,6 @@ int main(int argc, char** argv)
 			(receiver_radius_geometrized
 			* receiver_radius_geometrized);
 
-		real_type g_approx = 
-			n_geometrized 
-			/ (2 * pow(receiver_distance_geometrized, 3.0));
-
-
-		cout << g_approx / gradient_strength << endl;
-
 
 		const real_type a_Newton_geometrized =
 			sqrt(
@@ -246,15 +239,25 @@ int main(int argc, char** argv)
 			gradient_strength * receiver_distance_geometrized * log(2)
 			/ (2 * pi * emitter_mass_geometrized);
 
+
+		//real_type g_approx =
+		//	n_geometrized
+		//	/ (2 * pow(receiver_distance_geometrized, 3.0));
+
+		//const real_type a_approx_geometrized =
+		//	g_approx * receiver_distance_geometrized * log(2)
+		//	/ (2 * pi * emitter_mass_geometrized);
+
+
 		cout << endl;
 		cout << a_Newton_geometrized / a_flat_geometrized << endl;
 		cout << endl << endl;
 
 
-		outfile << receiver_distance_geometrized <<
-			" " <<
-			(a_Newton_geometrized / a_flat_geometrized) <<
-			endl;
+		//outfile << receiver_distance_geometrized <<
+		//	" " <<
+		//	(a_Newton_geometrized / a_flat_geometrized) <<
+		//	endl;
 	}
 
 }
