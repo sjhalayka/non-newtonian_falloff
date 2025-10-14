@@ -290,7 +290,7 @@ int main(int argc, char** argv)
 	ofstream outfile("ratio"); 
 
 	const real_type emitter_radius_geometrized =
-		sqrt(1e10 * log(2.0) / pi);
+		sqrt(1e8 * log(2.0) / pi);
 
 	const real_type receiver_radius_geometrized =
 		max(1.0, emitter_radius_geometrized); // Minimum one Planck unit
@@ -317,7 +317,7 @@ int main(int argc, char** argv)
 
 	real_type end_pos = start_pos * 3;
 
-	swap(end_pos, start_pos);
+//	swap(end_pos, start_pos);
 
 	const size_t pos_res = 25; // Minimum 2 steps
 
