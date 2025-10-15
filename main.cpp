@@ -119,7 +119,7 @@ real_type get_intersecting_line_density(
 		std::optional<real_type> i_hit = intersect(location, normal, receiver_distance, receiver_radius);
 
 		if (i_hit)
-			count += *i_hit  / (2.0*receiver_radius);
+			count += *i_hit / (2.0*receiver_radius);
 	}
 
 	return count;
@@ -131,8 +131,6 @@ real_type metres_to_planck_units(const real_type m)
 }
 
 
-// to do: get cube-rays. opposing facet intersections can cause curvature
-
 int main(int argc, char** argv)
 {
 	ofstream outfile("ratio"); 
@@ -141,7 +139,7 @@ int main(int argc, char** argv)
 		sqrt(1e9 * log(2.0) / pi);
 
 	const real_type receiver_radius_geometrized =
-		max(1.0, emitter_radius_geometrized*0.01); // Minimum one Planck unit
+		emitter_radius_geometrized*0.01; // Minimum one Planck unit
 
 	const real_type emitter_area_geometrized =
 		4.0 * pi
@@ -174,7 +172,8 @@ int main(int argc, char** argv)
 		/ (pos_res - 1);
 
 	const real_type epsilon =
-		0.01;// *receiver_radius_geometrized;
+		//0.01;// *receiver_radius_geometrized;
+	0.01 *emitter_radius_geometrized;
 
 	for (size_t i = 0; i < pos_res; i++)
 	{
