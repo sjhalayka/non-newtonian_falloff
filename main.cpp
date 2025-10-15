@@ -1,57 +1,18 @@
 ﻿#include "main.h"
 
-//
-//
-//struct Ray {
-//	vector_3 origin;
-//	vector_3 dir;  // should be normalized
-//};
-//
-//struct Sphere {
-//	vector_3 center;
-//	real_type radius;
-//};
-//
-//// Returns the closest positive intersection distance, if any.
-//std::optional<real_type> intersectRaySphere(const Ray& ray, const Sphere& sphere)
-//{
-//	vector_3 oc = ray.origin - sphere.center;
-//
-//	real_type a = ray.dir.dot(ray.dir);
-//	real_type b = 2.0f * oc.dot(ray.dir);
-//	real_type c = oc.dot(oc) - sphere.radius * sphere.radius;
-//
-//	real_type discriminant = b * b - 4 * a * c;
-//	if (discriminant < 0.0f)
-//		return std::nullopt; // no intersection
-//
-//	real_type sqrtD = sqrt(discriminant);
-//	real_type t1 = (-b - sqrtD) / (2.0f * a);
-//	real_type t2 = (-b + sqrtD) / (2.0f * a);
-//
-//	// Return the nearest positive t (intersection distance)
-//	if (t1 > 0.0f && t2 > 0.0f)
-//		return min(t1, t2);
-//	else if (t1 > 0.0f)
-//		return t1;
-//	else if (t2 > 0.0f)
-//		return t2;
-//	else
-//		return std::nullopt;
-//}
-
-
 real_type intersect_AABB(const vector_3 min_location, const vector_3 max_location, const vector_3 ray_origin, const vector_3 ray_dir, real_type& tmin, real_type& tmax)
 {
 	tmin = (min_location.x - ray_origin.x) / ray_dir.x;
 	tmax = (max_location.x - ray_origin.x) / ray_dir.x;
 
-	if (tmin > tmax) swap(tmin, tmax);
+	if (tmin > tmax) 
+		swap(tmin, tmax);
 
 	real_type tymin = (min_location.y - ray_origin.y) / ray_dir.y;
 	real_type tymax = (max_location.y - ray_origin.y) / ray_dir.y;
 
-	if (tymin > tymax) swap(tymin, tymax);
+	if (tymin > tymax) 
+		swap(tymin, tymax);
 
 	if ((tmin > tymax) || (tymin > tmax))
 		return 0;
@@ -65,7 +26,8 @@ real_type intersect_AABB(const vector_3 min_location, const vector_3 max_locatio
 	real_type tzmin = (min_location.z - ray_origin.z) / ray_dir.z;
 	real_type tzmax = (max_location.z - ray_origin.z) / ray_dir.z;
 
-	if (tzmin > tzmax) swap(tzmin, tzmax);
+	if (tzmin > tzmax) 
+		swap(tzmin, tzmax);
 
 	if ((tmin > tzmax) || (tzmin > tmax))
 		return 0;
@@ -105,54 +67,6 @@ vector_3 random_unit_vector(void)
 
 	return vector_3(x, y, z).normalize();
 }
-//
-//
-//// Structure to hold intersection information
-//struct RayHit {
-//	real_type t;           // Distance along the ray
-//	vector_3 point;   // Intersection point
-//	vector_3 normal;  // Surface normal at intersection
-//};
-//
-//// Returns std::nullopt if no intersection occurs
-//std::optional<RayHit> intersectRaySphere(
-//	const vector_3 rayOrigin,
-//	const vector_3 rayDir,
-//	const vector_3 sphereCenter,
-//	real_type sphereRadius)
-//{
-//	vector_3 oc = rayOrigin - sphereCenter;
-//
-//	real_type a = rayDir.dot(rayDir);
-//	real_type b = 2.0f * oc.dot(rayDir);
-//	real_type c = oc.dot(oc) - sphereRadius * sphereRadius;
-//
-//	real_type discriminant = b * b - 4.0f * a * c;
-//
-//	if (discriminant < 0.0f)
-//		return std::nullopt; // No real roots → no intersection
-//
-//	real_type sqrtDisc = sqrt(discriminant);
-//	real_type t1 = (-b - sqrtDisc) / (2.0f * a);
-//	real_type t2 = (-b + sqrtDisc) / (2.0f * a);
-//
-//	// Choose the nearest positive t (in front of the ray)
-//	real_type t = (t1 > 0.0f) ? t1 : t2;
-//	if (t < 0.0f)
-//		return std::nullopt;
-//
-//	vector_3 hitPoint;
-//	hitPoint.x = rayOrigin.x + rayDir.x * t;
-//	hitPoint.y = rayOrigin.y + rayDir.y * t;
-//	hitPoint.z = rayOrigin.z + rayDir.z * t;
-//
-//	vector_3 normal = hitPoint - sphereCenter;
-//	normal.normalize();
-//
-//	return RayHit{ t, hitPoint, normal };
-//}
-
-
 
 std::optional<real_type> intersect(
 	const vector_3 location,
@@ -176,72 +90,9 @@ std::optional<real_type> intersect(
 		return AABB_hit;
 
 	return std::nullopt;
-
-
-	//Ray ray{ location, normal };
-	//Sphere sphere{ { receiver_distance, 0.0, 0.0 }, receiver_radius };
-	//optional<RayHit> hit = intersectRaySphere(ray.origin, ray.dir, sphere.center, sphere.radius);
-
-	//if (hit)
-	//	return true;
-
-	//return false;
-
-
-
-
-
-
-
-	//optional<real_type> t = intersectRaySphere(ray, sphere);
-
-	//if (t)
-	//{
-	//	//vector_3 hitPoint = ray.origin + ray.dir * (*t);
-	//	//std::cout << "Hit at distance " << *t
-	//	//	<< " at point (" << hitPoint.x << ", "
-	//	//	<< hitPoint.y << ", " << hitPoint.z << ")\n";
-
-	//	return true;
-	//}
-
-	//return false;
-
-
-
-
-
-	// Approximate using a circle
-	// 
-	//const vector_3 circle_origin(receiver_distance, 0, 0);
-
-	//if (normal.dot(circle_origin) <= 0)
-	//	return false;
-
-	//vector_3 v;
-	//v.x = location.x + normal.x;
-	//v.y = location.y + normal.y;
-	//v.z = location.z + normal.z;
-
-	//const real_type ratio = v.x / circle_origin.x;
-
-	//v.y = v.y / ratio;
-	//v.z = v.z / ratio;
-	//v.x = circle_origin.x;
-
-	//vector_3 v2;
-	//v2.x = circle_origin.x - v.x;
-	//v2.y = circle_origin.y - v.y;
-	//v2.z = circle_origin.z - v.z;
-
-	//if (v2.length() > receiver_radius)
-	//	return false;
-
-	//return true;
-
 }
 
-real_type get_intersecting_line_count_integer(
+real_type get_intersecting_line_density(
 	const long long unsigned int n,
 	const real_type emitter_radius,
 	const real_type receiver_distance,
@@ -268,10 +119,7 @@ real_type get_intersecting_line_count_integer(
 		std::optional<real_type> i_hit = intersect(location, normal, receiver_distance, receiver_radius);
 
 		if (i_hit)
-		{
-			count += *i_hit / (2.0*receiver_radius);
-			//count++;
-		}
+			count += *i_hit  / (2.0*receiver_radius);
 	}
 
 	return count;
@@ -290,10 +138,10 @@ int main(int argc, char** argv)
 	ofstream outfile("ratio"); 
 
 	const real_type emitter_radius_geometrized =
-		sqrt(1e8 * log(2.0) / pi);
+		sqrt(1e9 * log(2.0) / pi);
 
 	const real_type receiver_radius_geometrized =
-		max(1.0, emitter_radius_geometrized); // Minimum one Planck unit
+		max(1.0, emitter_radius_geometrized*0.01); // Minimum one Planck unit
 
 	const real_type emitter_area_geometrized =
 		4.0 * pi
@@ -315,9 +163,9 @@ int main(int argc, char** argv)
 		emitter_radius_geometrized
 		+ receiver_radius_geometrized;
 
-	real_type end_pos = start_pos * 3;
+	real_type end_pos = start_pos * 10;
 
-//	swap(end_pos, start_pos);
+	//swap(end_pos, start_pos);
 
 	const size_t pos_res = 25; // Minimum 2 steps
 
@@ -326,7 +174,7 @@ int main(int argc, char** argv)
 		/ (pos_res - 1);
 
 	const real_type epsilon =
-		0.01 * receiver_radius_geometrized;
+		0.01;// *receiver_radius_geometrized;
 
 	for (size_t i = 0; i < pos_res; i++)
 	{
@@ -338,7 +186,7 @@ int main(int argc, char** argv)
 
 		// beta function
 		const real_type collision_count_plus =
-			get_intersecting_line_count_integer(
+			get_intersecting_line_density(
 				static_cast<long long unsigned int>(n_geometrized),
 				emitter_radius_geometrized,
 				receiver_distance_plus_geometrized,
@@ -346,7 +194,7 @@ int main(int argc, char** argv)
 
 		// beta function
 		const real_type collision_count =
-			get_intersecting_line_count_integer(
+			get_intersecting_line_density(
 				static_cast<long long unsigned int>(n_geometrized),
 				emitter_radius_geometrized,
 				receiver_distance_geometrized,
@@ -354,27 +202,28 @@ int main(int argc, char** argv)
 
 		// alpha variable
 		const real_type gradient_integer =
-			(collision_count_plus
-			- collision_count)
+			(collision_count_plus - collision_count)
 			/ epsilon;
 
 		// g variable
 		real_type gradient_strength =
-			-gradient_integer * pi
+			-gradient_integer
 			/
-			(4.0 * receiver_radius_geometrized
+			(receiver_radius_geometrized
 			* receiver_radius_geometrized
 			);
 
 		const real_type a_Newton_geometrized =
 			sqrt(
 				n_geometrized * log(2.0)
-				/ (4 * pi * pow(receiver_distance_geometrized, 4.0))
+				/ 
+				(4.0 * pi * 
+				pow(receiver_distance_geometrized, 4.0))
 			);
 
 		const real_type a_flat_geometrized =
 			gradient_strength * receiver_distance_geometrized * log(2)
-			/ (2 * pi * emitter_mass_geometrized);
+			/ (8.0 * emitter_mass_geometrized);
 
 		cout << endl;
 		cout << a_Newton_geometrized / a_flat_geometrized << endl;
