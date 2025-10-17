@@ -5,13 +5,13 @@ real_type intersect_AABB(const vector_3 min_location, const vector_3 max_locatio
 	tmin = (min_location.x - ray_origin.x) / ray_dir.x;
 	tmax = (max_location.x - ray_origin.x) / ray_dir.x;
 
-	if (tmin > tmax) 
+	if (tmin > tmax)
 		swap(tmin, tmax);
 
 	real_type tymin = (min_location.y - ray_origin.y) / ray_dir.y;
 	real_type tymax = (max_location.y - ray_origin.y) / ray_dir.y;
 
-	if (tymin > tymax) 
+	if (tymin > tymax)
 		swap(tymin, tymax);
 
 	if ((tmin > tymax) || (tymin > tmax))
@@ -26,7 +26,7 @@ real_type intersect_AABB(const vector_3 min_location, const vector_3 max_locatio
 	real_type tzmin = (min_location.z - ray_origin.z) / ray_dir.z;
 	real_type tzmax = (max_location.z - ray_origin.z) / ray_dir.z;
 
-	if (tzmin > tzmax) 
+	if (tzmin > tzmax)
 		swap(tzmin, tzmax);
 
 	if ((tmin > tzmax) || (tzmin > tmax))
@@ -119,7 +119,7 @@ real_type get_intersecting_line_density(
 		std::optional<real_type> i_hit = intersect(location, normal, receiver_distance, receiver_radius);
 
 		if (i_hit)
-			count += *i_hit / (2.0*receiver_radius);
+			count += *i_hit / (2.0 * receiver_radius);
 	}
 
 	return count;
@@ -133,13 +133,13 @@ real_type metres_to_planck_units(const real_type m)
 
 int main(int argc, char** argv)
 {
-	ofstream outfile("ratio"); 
+	ofstream outfile("ratio");
 
 	const real_type emitter_radius_geometrized =
-		sqrt(1e10 * log(2.0) / pi);
+		sqrt(1e11 * log(2.0) / pi);
 
 	const real_type receiver_radius_geometrized =
-		emitter_radius_geometrized*0.01; // Minimum one Planck unit
+		emitter_radius_geometrized * 0.01; // Minimum one Planck unit
 
 	const real_type emitter_area_geometrized =
 		4.0 * pi
@@ -155,7 +155,7 @@ int main(int argc, char** argv)
 		emitter_radius_geometrized
 		/ 2.0;
 
-	// Random outward, random tangent plane, and quantum graphity connections
+	// Outward, random outward, random tangent plane, and quantum graphity connections
 
 	real_type start_pos =
 		emitter_radius_geometrized
@@ -172,9 +172,9 @@ int main(int argc, char** argv)
 		/ (pos_res - 1);
 
 	const real_type epsilon =
-		//0.01;// *receiver_radius_geometrized;
-		0.01 *emitter_radius_geometrized;
-		
+		receiver_radius_geometrized;
+		//0.01 * emitter_radius_geometrized;
+		//0.01 * receiver_radius_geometrized;
 
 
 	for (size_t i = 0; i < pos_res; i++)
@@ -211,15 +211,15 @@ int main(int argc, char** argv)
 			-gradient_integer
 			/
 			(receiver_radius_geometrized
-			* receiver_radius_geometrized
-			);
+				* receiver_radius_geometrized
+				);
 
 		const real_type a_Newton_geometrized =
 			sqrt(
 				n_geometrized * log(2.0)
-				/ 
-				(4.0 * pi * 
-				pow(receiver_distance_geometrized, 4.0))
+				/
+				(4.0 * pi *
+					pow(receiver_distance_geometrized, 4.0))
 			);
 
 		const real_type a_flat_geometrized =
@@ -237,7 +237,7 @@ int main(int argc, char** argv)
 
 		//const real_type a_Newton2_geometrized =
 		//	emitter_mass_geometrized / pow(receiver_distance_geometrized, 2.0);
-		
+
 		//const real_type g_approx =
 		//	n_geometrized
 		//	/ (2 * pow(receiver_distance_geometrized, 3.0));
