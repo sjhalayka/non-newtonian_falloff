@@ -136,7 +136,7 @@ int main(int argc, char** argv)
 	ofstream outfile("ratio");
 
 	const real_type emitter_radius_geometrized =
-		sqrt(1e11 * log(2.0) / pi);
+		sqrt(1e10 * log(2.0) / pi);
 
 	const real_type receiver_radius_geometrized =
 		emitter_radius_geometrized * 0.01; // Minimum one Planck unit
@@ -173,8 +173,6 @@ int main(int argc, char** argv)
 
 	const real_type epsilon =
 		receiver_radius_geometrized;
-		//0.01 * emitter_radius_geometrized;
-		//0.01 * receiver_radius_geometrized;
 
 
 	for (size_t i = 0; i < pos_res; i++)
@@ -214,6 +212,10 @@ int main(int argc, char** argv)
 				* receiver_radius_geometrized
 				);
 
+		//cout << gradient_strength << " " << n_geometrized / (2 * pow(receiver_distance_geometrized, 3.0)) << endl;
+		//cout << gradient_strength / (n_geometrized / (2 * pow(receiver_distance_geometrized, 3.0))) << endl;
+
+
 		const real_type a_Newton_geometrized =
 			sqrt(
 				n_geometrized * log(2.0)
@@ -226,6 +228,21 @@ int main(int argc, char** argv)
 			gradient_strength * receiver_distance_geometrized * log(2)
 			/ (8.0 * emitter_mass_geometrized);
 
+
+		//const real_type g_approx = n_geometrized / (2 * pow(receiver_distance_geometrized, 3.0));
+		//const real_type a_approx_geometrized =
+		//	g_approx * receiver_distance_geometrized * log(2)
+		//	/ (8.0 * emitter_mass_geometrized);
+
+
+		const real_type dt_Schwarzschild = sqrt(1 - emitter_radius_geometrized / receiver_distance_geometrized);
+
+		const real_type a_Schwarszschild_geometrized =
+			emitter_mass_geometrized / (pow(receiver_distance_geometrized, 2.0) * dt_Schwarzschild);
+
+		cout << "a_Schwarzschild_geometrized " << a_Schwarszschild_geometrized << endl;
+		cout << "a_Newton_geometrized " << a_Newton_geometrized << endl;
+
 		cout << endl;
 		cout << a_Newton_geometrized / a_flat_geometrized << endl;
 		cout << endl << endl;
@@ -234,17 +251,6 @@ int main(int argc, char** argv)
 			" " <<
 			(a_Newton_geometrized / a_flat_geometrized) <<
 			endl;
-
-		//const real_type a_Newton2_geometrized =
-		//	emitter_mass_geometrized / pow(receiver_distance_geometrized, 2.0);
-
-		//const real_type g_approx =
-		//	n_geometrized
-		//	/ (2 * pow(receiver_distance_geometrized, 3.0));
-
-		//const real_type a_approx_geometrized =
-		//	g_approx * receiver_distance_geometrized * log(2)
-		//	/ (2 * pi * emitter_mass_geometrized);
 	}
 
 }
