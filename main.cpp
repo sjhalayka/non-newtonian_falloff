@@ -182,15 +182,6 @@ real_type get_intersecting_line_density(
 		if (i % 100000000 == 0)
 			cout << float(i) / float(n) << endl;
 
-		// Straight outward
-		//vector_3 normal = random_unit_vector();
-		//vector_3 location = normal;
-
-		//location.x *= emitter_radius;
-		//location.y *= emitter_radius;
-		//location.z *= emitter_radius;
-
-
 		// Random hemisphere outward
 		vector_3 location = random_unit_vector();
 
@@ -203,18 +194,8 @@ real_type get_intersecting_line_density(
 
 		vector_3 normal = random_cosine_weighted_hemisphere(surface_normal);
 
-		if (normal.dot(location) < 0)
-			normal = -normal;
-
 		// result * pi / 2
 
-
-		//vector_3 location = random_unit_vector();
-		//location.x *= emitter_radius;
-		//location.y *= emitter_radius;
-		//location.z *= emitter_radius;
-
-		//vector_3 normal = random_tangent_vector(location);
 
 
 
@@ -340,7 +321,7 @@ int main(int argc, char** argv)
 		const real_type dt_Schwarzschild = sqrt(1 - emitter_radius_geometrized / receiver_distance_geometrized);
 
 		const real_type a_Schwarzschild_geometrized =
-			emitter_mass_geometrized / (pow(receiver_distance_geometrized, 2.0) * dt_Schwarzschild);
+			2 * emitter_mass_geometrized / (pi * pow(receiver_distance_geometrized, 2.0) * dt_Schwarzschild);
 
 		cout << "a_Schwarzschild_geometrized " << a_Schwarzschild_geometrized << endl;
 		cout << "a_Newton_geometrized " << a_Newton_geometrized << endl;
