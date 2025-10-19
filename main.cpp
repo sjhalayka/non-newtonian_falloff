@@ -122,6 +122,51 @@ vector_3 random_tangent_vector(const vector_3& point_on_sphere)
 	return result.normalize();
 }
 
+
+vector_3 random_cosine_weighted_hemisphere(const vector_3& normal)
+{
+	// Generate two random numbers
+	real_type u1 = dis(generator);
+	real_type u2 = dis(generator);
+
+	// Malley's method (cosine-weighted hemisphere sampling)
+	// Sample uniformly on a disk, then project up to hemisphere
+	real_type r = sqrt(u1);
+	real_type theta = 2.0 * pi * u2;
+
+	// Point on unit disk
+	real_type x = r * cos(theta);
+	real_type y = r * sin(theta);
+	real_type z = sqrt(1.0 - u1); // Height above disk (gives cos weighting)
+
+	// Create orthonormal basis around normal
+	vector_3 n = normal;
+	n.normalize();
+
+	// Choose an arbitrary vector not parallel to normal
+	vector_3 arbitrary;
+	if (fabs(n.x) > 0.9)
+		arbitrary = vector_3(0, 1, 0);
+	else
+		arbitrary = vector_3(1, 0, 0);
+
+	// Create tangent and bitangent
+	vector_3 tangent = n.cross(arbitrary);
+	tangent.normalize();
+
+	vector_3 bitangent = n.cross(tangent);
+	bitangent.normalize();
+
+	// Transform from local coordinates to world coordinates
+	vector_3 result;
+	result.x = tangent.x * x + bitangent.x * y + n.x * z;
+	result.y = tangent.y * x + bitangent.y * y + n.y * z;
+	result.z = tangent.z * x + bitangent.z * y + n.z * z;
+
+	return result.normalize();
+}
+
+
 real_type get_intersecting_line_density(
 	const long long unsigned int n,
 	const real_type emitter_radius,
@@ -147,26 +192,29 @@ real_type get_intersecting_line_density(
 
 
 		// Random hemisphere outward
-		//vector_3 location = random_unit_vector();
-
-		//location.x *= emitter_radius;
-		//location.y *= emitter_radius;
-		//location.z *= emitter_radius;
-
-		//vector_3 normal = random_unit_vector();
-
-		//if (normal.dot(location) < 0)
-		//	normal = -normal;
-
-
-
-
 		vector_3 location = random_unit_vector();
+
 		location.x *= emitter_radius;
 		location.y *= emitter_radius;
 		location.z *= emitter_radius;
 
-		vector_3 normal = random_tangent_vector(location);
+		vector_3 surface_normal = location;
+		surface_normal.normalize();
+
+		vector_3 normal = random_cosine_weighted_hemisphere(surface_normal);
+
+		if (normal.dot(location) < 0)
+			normal = -normal;
+
+		// result * pi / 2
+
+
+		//vector_3 location = random_unit_vector();
+		//location.x *= emitter_radius;
+		//location.y *= emitter_radius;
+		//location.z *= emitter_radius;
+
+		//vector_3 normal = random_tangent_vector(location);
 
 
 
@@ -190,7 +238,7 @@ int main(int argc, char** argv)
 	ofstream outfile("ratio");
 
 	const real_type emitter_radius_geometrized =
-		sqrt(1e9 * log(2.0) / pi);
+		sqrt(1e8 * log(2.0) / pi);
 
 	const real_type receiver_radius_geometrized =
 		emitter_radius_geometrized * 0.01; // Minimum one Planck unit
