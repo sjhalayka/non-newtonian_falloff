@@ -107,14 +107,26 @@ real_type get_intersecting_line_density(
 		if (i % 100000000 == 0)
 			cout << float(i) / float(n) << endl;
 
-		const vector_3 p = random_unit_vector();
+		// Straight outward
+		//vector_3 normal = random_unit_vector();
+		//vector_3 location = normal;
 
-		vector_3 normal = p;
-		vector_3 location = normal;
+		//location.x *= emitter_radius;
+		//location.y *= emitter_radius;
+		//location.z *= emitter_radius;
+
+
+		// Random hemisphere outward
+		vector_3 location = random_unit_vector();
 
 		location.x *= emitter_radius;
 		location.y *= emitter_radius;
 		location.z *= emitter_radius;
+
+		vector_3 normal = random_unit_vector();
+
+		if (normal.dot(location) < 0)
+			normal = -normal;
 
 		std::optional<real_type> i_hit = intersect(location, normal, receiver_distance, receiver_radius);
 
@@ -136,7 +148,7 @@ int main(int argc, char** argv)
 	ofstream outfile("ratio");
 
 	const real_type emitter_radius_geometrized =
-		sqrt(1e10 * log(2.0) / pi);
+		sqrt(1e11 * log(2.0) / pi);
 
 	const real_type receiver_radius_geometrized =
 		emitter_radius_geometrized * 0.01; // Minimum one Planck unit
@@ -161,9 +173,9 @@ int main(int argc, char** argv)
 		emitter_radius_geometrized
 		+ receiver_radius_geometrized;
 
-	real_type end_pos = start_pos * 10;
+	real_type end_pos = start_pos * 100;
 
-	//swap(end_pos, start_pos);
+	swap(end_pos, start_pos);
 
 	const size_t pos_res = 2; // Minimum 2 steps
 
@@ -237,11 +249,15 @@ int main(int argc, char** argv)
 
 		const real_type dt_Schwarzschild = sqrt(1 - emitter_radius_geometrized / receiver_distance_geometrized);
 
-		const real_type a_Schwarszschild_geometrized =
+		const real_type a_Schwarzschild_geometrized =
 			emitter_mass_geometrized / (pow(receiver_distance_geometrized, 2.0) * dt_Schwarzschild);
 
-		cout << "a_Schwarzschild_geometrized " << a_Schwarszschild_geometrized << endl;
+		cout << "a_Schwarzschild_geometrized " << a_Schwarzschild_geometrized << endl;
 		cout << "a_Newton_geometrized " << a_Newton_geometrized << endl;
+		cout << "a_flat_geometrized " << a_flat_geometrized << endl;
+		cout << a_Schwarzschild_geometrized / a_flat_geometrized << endl;
+		 
+
 
 		cout << endl;
 		cout << a_Newton_geometrized / a_flat_geometrized << endl;
