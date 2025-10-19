@@ -92,6 +92,36 @@ std::optional<real_type> intersect(
 	return std::nullopt;
 }
 
+vector_3 random_tangent_vector(const vector_3& point_on_sphere)
+{
+	// Normalize to ensure it's on unit sphere
+	vector_3 normal = point_on_sphere;
+	normal.normalize();
+
+	// Choose an arbitrary vector that's not parallel to normal
+	vector_3 arbitrary;
+	if (fabs(normal.x) > 0.9)
+		arbitrary = vector_3(0, 1, 0);  // If normal is mostly along x, use y
+	else
+		arbitrary = vector_3(1, 0, 0);  // Otherwise use x
+
+	// Get first basis vector perpendicular to normal
+	vector_3 tangent1 = normal.cross(arbitrary);
+	tangent1.normalize();
+
+	// Get second basis vector perpendicular to both
+	vector_3 tangent2 = normal.cross(tangent1);
+	tangent2.normalize();
+
+	// Generate random angle for rotation in tangent plane
+	real_type angle = dis(generator) * 2.0 * pi;
+
+	// Combine the two tangent vectors with random weights
+	vector_3 result = tangent1 * cos(angle) + tangent2 * sin(angle);
+
+	return result.normalize();
+}
+
 real_type get_intersecting_line_density(
 	const long long unsigned int n,
 	const real_type emitter_radius,
@@ -117,16 +147,28 @@ real_type get_intersecting_line_density(
 
 
 		// Random hemisphere outward
-		vector_3 location = random_unit_vector();
+		//vector_3 location = random_unit_vector();
 
+		//location.x *= emitter_radius;
+		//location.y *= emitter_radius;
+		//location.z *= emitter_radius;
+
+		//vector_3 normal = random_unit_vector();
+
+		//if (normal.dot(location) < 0)
+		//	normal = -normal;
+
+
+
+
+		vector_3 location = random_unit_vector();
 		location.x *= emitter_radius;
 		location.y *= emitter_radius;
 		location.z *= emitter_radius;
 
-		vector_3 normal = random_unit_vector();
+		vector_3 normal = random_tangent_vector(location);
 
-		if (normal.dot(location) < 0)
-			normal = -normal;
+
 
 		std::optional<real_type> i_hit = intersect(location, normal, receiver_distance, receiver_radius);
 
@@ -148,7 +190,7 @@ int main(int argc, char** argv)
 	ofstream outfile("ratio");
 
 	const real_type emitter_radius_geometrized =
-		sqrt(1e11 * log(2.0) / pi);
+		sqrt(1e9 * log(2.0) / pi);
 
 	const real_type receiver_radius_geometrized =
 		emitter_radius_geometrized * 0.01; // Minimum one Planck unit
@@ -175,7 +217,7 @@ int main(int argc, char** argv)
 
 	real_type end_pos = start_pos * 100;
 
-	swap(end_pos, start_pos);
+	//swap(end_pos, start_pos);
 
 	const size_t pos_res = 2; // Minimum 2 steps
 
