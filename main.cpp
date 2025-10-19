@@ -228,7 +228,7 @@ int main(int argc, char** argv)
 	ofstream outfile("ratio");
 
 	const real_type emitter_radius_geometrized =
-		sqrt(1e10 * log(2.0) / pi);
+		sqrt(1e11 * log(2.0) / pi);
 
 	const real_type receiver_radius_geometrized =
 		emitter_radius_geometrized * 0.01; // Minimum one Planck unit
@@ -253,9 +253,9 @@ int main(int argc, char** argv)
 		emitter_radius_geometrized
 		+ receiver_radius_geometrized;
 
-	real_type end_pos = start_pos * 100;
+	real_type end_pos = start_pos * 50;
 
-	swap(end_pos, start_pos);
+	//swap(end_pos, start_pos);
 
 	const size_t pos_res = 2; // Minimum 2 steps
 
@@ -330,7 +330,7 @@ int main(int argc, char** argv)
 		const real_type dt_Schwarzschild = sqrt(1 - emitter_radius_geometrized / receiver_distance_geometrized);
 
 		const real_type a_Schwarzschild_geometrized =
-			2 * emitter_mass_geometrized / (pi * pow(receiver_distance_geometrized, 2.0) * dt_Schwarzschild);
+			emitter_radius_geometrized / (pi * pow(receiver_distance_geometrized, 2.0) * dt_Schwarzschild);
 
 		cout << "a_Schwarzschild_geometrized " << a_Schwarzschild_geometrized << endl;
 		cout << "a_Newton_geometrized " << a_Newton_geometrized << endl;
