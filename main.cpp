@@ -139,16 +139,13 @@ vector_3 random_cosine_weighted_hemisphere(const vector_3& normal)
 	// Point on unit disk
 	real_type x = r * cos(theta);
 	real_type y = r * sin(theta);
-
-	// Height above disk
-	real_type z = sqrt(1.0 - u1); 
+	real_type z = sqrt(1.0 - u1); // Height above disk
 
 	// Create orthonormal basis around normal
 	vector_3 n = normal;
 	n.normalize();
 
-	// Choose an arbitrary vector
-	// not parallel to normal
+	// Choose an arbitrary vector not parallel to normal
 	vector_3 arbitrary;
 	if (fabs(n.x) > 0.9)
 		arbitrary = vector_3(0, 1, 0);
@@ -166,16 +163,20 @@ vector_3 random_cosine_weighted_hemisphere(const vector_3& normal)
 	// to world coordinates
 	vector_3 result;
 	result.x = tangent.x * x + 
-		bitangent.x * y + n.x * z;
+		bitangent.x * y + 
+		n.x * z;
 
 	result.y = tangent.y * x + 
-		bitangent.y * y + n.y * z;
+		bitangent.y * y + 
+		n.y * z;
 
 	result.z = tangent.z * x + 
-		bitangent.z * y + n.z * z;
+		bitangent.z * y + 
+		n.z * z;
 
 	return result.normalize();
 }
+
 
 real_type get_intersecting_line_density(
 	const long long unsigned int n,
@@ -217,12 +218,6 @@ real_type get_intersecting_line_density(
 	return count;
 }
 
-real_type metres_to_planck_units(const real_type m)
-{
-	return m / planck_length;
-}
-
-
 int main(int argc, char** argv)
 {
 	ofstream outfile("ratio");
@@ -247,17 +242,15 @@ int main(int argc, char** argv)
 		emitter_radius_geometrized
 		/ 2.0;
 
-	// Outward, random outward, random tangent plane, and quantum graphity connections
-
 	real_type start_pos =
 		emitter_radius_geometrized
 		+ receiver_radius_geometrized;
 
-	real_type end_pos = start_pos * 50;
+	real_type end_pos = start_pos * 10;
 
 	//swap(end_pos, start_pos);
 
-	const size_t pos_res = 2; // Minimum 2 steps
+	const size_t pos_res = 10; // Minimum 2 steps
 
 	const real_type pos_step_size =
 		(end_pos - start_pos)
